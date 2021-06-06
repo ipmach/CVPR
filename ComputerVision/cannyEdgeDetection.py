@@ -88,7 +88,7 @@ class CannyEdge:
                         num += 1
                         f5[i, j] = 2
                 if num == 0:
-                    f[x, y]
+                    f[x, y] = 0
             else:
                 break
         return f5
