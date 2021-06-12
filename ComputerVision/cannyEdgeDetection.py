@@ -84,11 +84,12 @@ class CannyEdge:
                 y = xy[1][0]
                 num = 0
                 for (i, j) in CannyEdge.get_neighbours(x, y, f5.shape):
-                    if f5[i, j] == 1:
+                    if f5[i, j] == 2:
                         num += 1
-                        f5[i, j] = 2
+                        f5[x, y] = 2
+                        break
                 if num == 0:
-                    f[x, y] = 0
+                    f5[x, y] = 0
             else:
                 break
         return f5

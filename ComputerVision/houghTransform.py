@@ -26,28 +26,19 @@ class HoughTransform:
 
     @staticmethod
     def hough_circle(img, r):
-        raise Exception("Not working")
+        # Inspired from Wikipedia
         (M, N) = img.shape
         index = np.array(list(zip(np.nonzero(img)))).T.reshape((-1, 2))
-
-        a = np.arange(M)
-        accumulator = np.zeros(img.shape)
-
+        theta = np.radians(np.arange(-90, 90))
+        accumulator = np.zeros((M, N))
         for i in tqdm(index):
             x = i[0]
             y = i[1]
-            # p_values = np.round(x * np.cos(theta) + y * np.sin(theta))
-            b = - 2 * y + np.sqrt(4 * (y ** 2) - 4 * ((x - a) ** 2 + y ** 2 - r ** 2))
-            coord_acc = np.array(list(zip(np.arange(len(a)), b))).astype(int)
-            for [x, y] in coord_acc:
-                print(x, y)
-                if 0 <= y < N:
-                    accumulator[x][y] += 1
-            b = - 2 * y - np.sqrt(4 * (y ** 2) - 4 * ((x - a) ** 2 + y ** 2 - r ** 2))
-            coord_acc = np.array(list(zip(np.arange(len(a)), b))).astype(int)
-            for [x, y] in coord_acc:
-                if 0 <= y < N:
-                    accumulator[x][y] += 1
+            for t in theta:
+                b = int(y - r * np.sin(t))
+                a = int(x - r * np.cos(t))
+                if 0 <= a < M and 0 <= b < N:
+                    accumulator[a, b] += 1
         return accumulator, N
 
     @staticmethod
@@ -59,6 +50,26 @@ class HoughTransform:
             y = (rho - x * math.cos(theta)) / math.sin(theta)
             ax.plot(y, x, '-', linewidth=1, color='red')
         plt.xlim(0, A.shape[1] - 1)
+
+    @staticmethod
+    def get_top_circles(acumulator, num_lines=10):
+        accumulator2 = np.copy(acumulator)
+        top_ = []
+        for _ in range(num_lines):
+            a, b = np.unravel_index(np.argmax(accumulator2), accumulator2.shape)
+            accumulator2[a, b] = 0
+            top_.append([a, b])
+        return top_
+
+    @staticmethod
+    def draw_circle(A, top_, r=7):
+        fig, ax = plt.subplots()
+        circles = []
+        for [x, y] in top_:
+            circles.append(plt.Circle(xy=(x, y), ec='red', radius=r))
+            circles[-1].set_facecolor('none')
+            ax.add_patch(circles[-1])
+        ax.imshow(A)
 
     @staticmethod
     def get_top_lines(accumulator, p_max, num_lines=10):
@@ -119,8 +130,12 @@ class HoughTransform:
         accumulator2 = None
         if supresion:
             accumulator2 = HoughTransform.non_maxima_supresion(accumulator)
-        top_ = HoughTransform.get_top_lines(accumulator2, p_max, num_lines=num_lines)
-
-        if plot:
-            HoughTransform.draw_line(img, top_)
+        if method == 'line':
+            top_ = HoughTransform.get_top_lines(accumulator2, p_max, num_lines=num_lines)
+            if plot:
+                HoughTransform.draw_line(img, top_)
+        else:
+            top_ = HoughTransform.get_top_circles(accumulator2, num_lines=num_lines)
+            if plot:
+                HoughTransform.draw_circle(img, top_, r=r)
         return top_, accumulator, accumulator2
