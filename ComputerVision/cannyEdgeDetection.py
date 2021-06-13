@@ -5,9 +5,17 @@ import numpy as np
 
 
 class CannyEdge:
+    """
+    Canny Edge Detection algorithm
+    """
 
     @staticmethod
     def group_angle(x):
+        """
+        Group angles by groups
+        :param x: angle
+        :return: new angle
+        """
         if -22.5 <= x <= 22.5 or 157.5 <= x or -157.5 >= x:
             return 0
         if 22.5 <= x <= 67.5 or -112.5 >= x >= -157.5:
@@ -19,6 +27,14 @@ class CannyEdge:
 
     @staticmethod
     def compare_magnitude(x, y, i, j):
+        """
+        Magnitude comparison
+        :param x: magnitude
+        :param y: image
+        :param i: coordinate image x
+        :param j: coordinate image y
+        :return: value
+        """
         if x == 0:
             if y[i, j] < y[i - 1, j] or y[i, j] < y[i + 1, j]:
                 return 0
@@ -35,6 +51,12 @@ class CannyEdge:
 
     @staticmethod
     def compare_magnitudes(x, y):
+        """
+        Compare magnitudes
+        :param x: image x
+        :param y: image y
+        :return: new image
+        """
         aux = np.zeros(x.shape)
         for i in tqdm(range(x.shape[0])):
             for j in range(x.shape[1]):
@@ -46,6 +68,13 @@ class CannyEdge:
 
     @staticmethod
     def thresholding(x, th, tl):
+        """
+        Apply thresholds
+        :param x: image
+        :param th: small threshold
+        :param tl: big threshold
+        :return: value
+        """
         if x >= th:
             return 2
         if th > x >= tl:
@@ -54,6 +83,13 @@ class CannyEdge:
 
     @staticmethod
     def get_neighbours(i, j, shape_):
+        """
+        Get neighbours pixel
+        :param i: coordinate x
+        :param j: coordinate y
+        :param shape_: shape image
+        :return: neighbours
+        """
         list_indexes = [(i, j)]
         if i - 1 >= 0:
             if j - 1 >= 0:
@@ -77,6 +113,12 @@ class CannyEdge:
 
     @staticmethod
     def region_grow(f, f5):
+        """
+        Do region grow
+        :param f: filter function
+        :param f5: image
+        :return: new image
+        """
         while True:
             xy = np.nonzero(f(f5))
             if len(xy[0]) > 0:
@@ -96,6 +138,15 @@ class CannyEdge:
 
     @staticmethod
     def apply(img, tl=0.05, th=0.15, do_grow=True, kernel_size=3):
+        """
+        Apply algorithm
+        :param img: image
+        :param tl: low threshold
+        :param th: upper threshold
+        :param do_grow: apply incremental grow
+        :param kernel_size: kernel size
+        :return: new image
+        """
         print("Applying Canny edge detector")
         # Step 1
         print("    (1/5) Integration")

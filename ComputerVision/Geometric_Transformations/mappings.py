@@ -5,6 +5,15 @@ import numpy as np
 
 def inverse_mapping(img, A, default_value=255,
                     interpolation=Interpolations.bilinear, scale=(1, 1)):
+    """
+    Apply inverse mapping in a image
+    :param img: original image
+    :param A: matrix transformation
+    :param default_value: default value of pixel
+    :param interpolation: interpolation apply
+    :param scale: scale factor (x,y)
+    :return: new img
+    """
     # Invert A
     A = np.linalg.inv(A)
 
@@ -29,6 +38,14 @@ def inverse_mapping(img, A, default_value=255,
 
 
 def forward_mapping(img, A, default_value=255, scale=(1, 1)):
+    """
+    Apply forward mapping in a image
+    :param img: original image
+    :param A: matrix transformation
+    :param default_value: default value of pixel
+    :param scale: scale factor (x,y)
+    :return: new img
+    """
     # New image
     (M, N) = img.shape[:2]
     M2 = int(M * scale[0])

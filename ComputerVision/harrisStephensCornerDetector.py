@@ -7,12 +7,23 @@ import numpy as np
 class HarrisMatrix:
 
     def __init__(self, Gx, Gy, w):
+        """
+        Class of Harris Matrix
+        :param Gx: Gradient x
+        :param Gy: Gradient y
+        :param w: weight kernel
+        """
         self.Gxx = np.power(Gx, 2)
         self.Gyy = np.power(Gy, 2)
         self.Gxy = Gx * Gy
         self.w = w
 
     def full_R(self, k=0.05):
+        """
+        Return full matrix
+        :param k: variable use
+        :return: full matrix
+        """
         R = np.zeros(self.Gxx.shape)
         for i in tqdm(range(R.shape[0])):
             for j in range(R.shape[1]):
@@ -22,6 +33,12 @@ class HarrisMatrix:
         return R
 
     def __call__(self, s, t):
+        """
+        Return one pixel value
+        :param s: coordinate x
+        :param t: coordinate y
+        :return: value
+        """
         return self.w[s, t] * np.array([[self.Gxx[s, t], self.Gxy[s, t]],
                                         [self.Gxy[s, t], self.Gyy[s, t]]])
 
@@ -31,6 +48,11 @@ class HarrisStephens:
 
     @staticmethod
     def calculateGxGy(img):
+        """
+        Calculate Gradients Gx, Gy
+        :param img: iamge
+        :return: Gx, Gy
+        """
         Gx = np.zeros(img.shape)
         Gy = np.zeros(img.shape)
         gx = np.array([-0.5, 0, 0.5])
@@ -46,12 +68,30 @@ class HarrisStephens:
 
     @staticmethod
     def matrix_m(s, t, Gx, Gy, w):
+        """
+        calculate matrix m value
+        :param s: coordinate x
+        :param t: coordinate y
+        :param Gx: Gradient x
+        :param Gy: Gradient y
+        :param w: weight kernel
+        :return: value
+        """
         GxGy = Gx[s, t] * Gy[s, t]
         return w[s, t] * np.array([[Gx[s, t] ** 2, GxGy],
                                    [GxGy, Gy[s, t] ** 2]])
 
     @staticmethod
     def harrisStepherApprox(img, w, Gx, Gy, kernel_size=3):
+        """
+        Apply harries Stepher pixel-wise approximation
+        :param img: image
+        :param w: kernel
+        :param Gx: Gradient x
+        :param Gy: Gradient y
+        :param kernel_size: size kernel
+        :return: new image
+        """
         img2 = np.zeros(img.shape)
         a = b = int((kernel_size - 1) / 2)
         for i in tqdm(range(a, img.shape[0] - a)):
@@ -63,6 +103,15 @@ class HarrisStephens:
 
     @staticmethod
     def apply(img, t=0.01, k=0.05, kernel_size=3, gamma=3.5):
+        """
+        Apply corner detection
+        :param img: image
+        :param t: threshold 1
+        :param k: threshold 2
+        :param kernel_size: kernel size
+        :param gamma: gamma value gaussian kernel
+        :return: new image
+        """
         print("Harris-Stephens corner detector")
         # Step 1
         print("    (1/5) Differentiation")

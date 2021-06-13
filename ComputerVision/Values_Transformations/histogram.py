@@ -4,9 +4,17 @@ import numpy as np
 
 
 class Histogram:
+    """
+    Apply Histogram Transformations
+    """
 
     @staticmethod
     def calculate_cdf(count):
+        """
+        Calculate cumulative distribution function
+        :param count: count histogram
+        :return: cumulative distribution function
+        """
         cdf_ = [0]
         for i in range(1, len(count)):
             cdf_.append(cdf_[i - 1] + count[i])
@@ -14,6 +22,13 @@ class Histogram:
 
     @staticmethod
     def plot_histogram(hist, cdf=True, figsize=(15, 5)):
+        """
+        Plot histogram
+        :param hist: Histogram
+        :param cdf: Calculate cdf (default=True)
+        :param figsize: size figure
+        :return:
+        """
         (values, count) = hist
         plt.figure(figsize=figsize)
         if cdf:
@@ -28,7 +43,17 @@ class Histogram:
 
     @staticmethod
     def histogram(img, visualize=True, normalize=False,
-                  full=False, L=255):
+                  full=False, L=255, figsize=(15, 5)):
+        """
+        Creaet histogram from image intensities
+        :param img: image
+        :param visualize: do visualization (default=True)
+        :param normalize: do normalization (default=False)
+        :param full: do all columns even empty ones (default=False)
+        :param L: Maximum intensity
+        :param figsize: size figure
+        :return: values, count
+        """
         values, count = np.unique(img, return_counts=True)
         if full:  # Complete discrete space
             values2 = np.zeros(L)
@@ -44,11 +69,18 @@ class Histogram:
                 total *= i
             count = count / total
         if visualize:
-            Histogram.plot_histogram((values, count))
+            Histogram.plot_histogram((values, count), figsize=figsize)
         return values, count
 
     @staticmethod
     def equalization_book(img, L=255, round_=True):
+        """
+        Book's equalization method
+        :param img: image
+        :param L: Maximum intensity
+        :param round_: round values (default=True)
+        :return: equalize image
+        """
         (_, prob) = Histogram.histogram(img, visualize=False,
                                         normalize=True, full=True)
         f = np.vectorize(lambda k: (L - 1) * np.sum([prob[j]
@@ -60,6 +92,12 @@ class Histogram:
 
     @staticmethod
     def equalization_wiki(img, L=255):
+        """
+        Wikipedia's equalization method
+        :param img: image
+        :param L: Maximum intensity
+        :return: equalize image
+        """
         img2 = Histogram.equalization_book(img, L=L)
         s_min = np.min(img2)
         f = np.vectorize(lambda s: (s - s_min) /
@@ -68,6 +106,12 @@ class Histogram:
 
     @staticmethod
     def equalization_prof(img, L=255):
+        """
+        Profesor's equalization method
+        :param img: image
+        :param L: Maximum intensity
+        :return: equalize image
+        """
         (_, prob) = Histogram.histogram(img, visualize=False,
                                         normalize=True, full=True)
         f = np.vectorize(lambda k: (L - 1) * np.sum([prob[j]
@@ -77,6 +121,13 @@ class Histogram:
 
     @staticmethod
     def equalization(img, L=255, method='prof'):
+        """
+        Apply equalization transformation
+        :param img: image
+        :param L: Maximum intensity
+        :param method: method used ('book', 'wiki', 'prof', default='prof')
+        :return: equalize image
+        """
         methods = {
             'book': Histogram.equalization_book,
             'wiki': Histogram.equalization_wiki,
@@ -86,6 +137,12 @@ class Histogram:
 
     @staticmethod
     def matching(img1, img2):
+        """
+        Apply matching transformation
+        :param img1: original image
+        :param img2: second image
+        :return: new image
+        """
         # Getting info need it
         (_, count1) = Histogram.histogram(img1, normalize=True,
                                           full=True, visualize=False)

@@ -1,7 +1,19 @@
 class Interpolations:
+    """
+    Interpolations apply in inverse mappings
+    """
 
     @staticmethod
     def no_inter(img, M, N, x, y):
+        """
+        No interpolation apply in pixel
+        :param img: original image
+        :param M: size image x
+        :param N: size image y
+        :param x: coordinate x
+        :param y: coordinate y
+        :return:  return interpolation
+        """
         k = round(x) - 1
         l = round(y) - 1
         if (k >= 0) and (k < M - 1) and (l >= 0) and (l < N - 1):
@@ -9,6 +21,15 @@ class Interpolations:
 
     @staticmethod
     def bilinear(img, M, N, x, y):
+        """
+        Bilinaer interpolation apply in pixel
+        :param img: original image
+        :param M: size image x
+        :param N: size image y
+        :param x: coordinate x
+        :param y: coordinate y
+        :return:  return interpolation
+        """
         k = round(x) - 1
         l = round(y) - 1
         u = x - k - 0.5
@@ -19,6 +40,15 @@ class Interpolations:
 
     @staticmethod
     def nearest_neighbour(img, M, N, x, y):
+        """
+        Nearest neighbour interpolation apply in pixel
+        :param img: original image
+        :param M: size image x
+        :param N: size image y
+        :param x: coordinate x
+        :param y: coordinate y
+        :return:  return interpolation
+        """
         k = round(x) - 1
         l = round(y) - 1
         if (k >= 0) and (k < M - 1) and (l >= 0) and (l < N - 1):

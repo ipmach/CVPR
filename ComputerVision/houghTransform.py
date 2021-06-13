@@ -5,9 +5,18 @@ import math
 
 
 class HoughTransform:
+    """
+    Apply Hough Transform
+    """
 
     @staticmethod
-    def hough_line(img, r):
+    def hough_line(img, r=None):
+        """
+        Hough line detection
+        :param img: image
+        :param r: not use (default=None)
+        :return: accumulator, p_max
+        """
         (M, N) = img.shape
         index = np.array(list(zip(np.nonzero(img)))).T.reshape((-1, 2))
 
@@ -26,6 +35,12 @@ class HoughTransform:
 
     @staticmethod
     def hough_circle(img, r):
+        """
+        Hough circle detection
+        :param img: image
+        :param r: radio
+        :return: accumulator N
+        """
         # Inspired from Wikipedia
         (M, N) = img.shape
         index = np.array(list(zip(np.nonzero(img)))).T.reshape((-1, 2))
@@ -43,6 +58,12 @@ class HoughTransform:
 
     @staticmethod
     def draw_line(A, top_):
+        """
+        Draw top lines in the image
+        :param A:
+        :param top_:
+        :return:
+        """
         x = np.arange(0, A.shape[1])
         fig, ax = plt.subplots()
         ax.imshow(A, cmap='gray')
@@ -53,6 +74,12 @@ class HoughTransform:
 
     @staticmethod
     def get_top_circles(acumulator, num_lines=10):
+        """
+        Get top circles of the image
+        :param acumulator: acumulator
+        :param num_lines: number of lines (default=10)
+        :return: top circles
+        """
         accumulator2 = np.copy(acumulator)
         top_ = []
         for _ in range(num_lines):
@@ -63,6 +90,13 @@ class HoughTransform:
 
     @staticmethod
     def draw_circle(A, top_, r=7):
+        """
+        Draw circle
+        :param A: image
+        :param top_: top circles
+        :param r: radius
+        :return:
+        """
         fig, ax = plt.subplots()
         circles = []
         for [x, y] in top_:
@@ -73,6 +107,13 @@ class HoughTransform:
 
     @staticmethod
     def get_top_lines(accumulator, p_max, num_lines=10):
+        """
+        Get top lines
+        :param accumulator: acumulator
+        :param p_max: p max value
+        :param num_lines: number of lines
+        :return: top lines
+        """
         accumulator2 = np.copy(accumulator)
         top_ = []
         for i in range(num_lines):
@@ -84,6 +125,13 @@ class HoughTransform:
 
     @staticmethod
     def get_neighbours(i, j, shape_):
+        """
+        Get neighbours from pixel
+        :param i: coordinate x
+        :param j: coordinate y
+        :param shape_: shape image
+        :return: neighbours
+        """
         list_indexes = [(i, j)]
         if i - 1 >= 0:
             if j - 1 >= 0:
@@ -107,6 +155,11 @@ class HoughTransform:
 
     @staticmethod
     def non_maxima_supresion(accumulator):
+        """
+        Non maxima supresion apply in accumulator
+        :param accumulator: accumulator
+        :return: new accumulator
+        """
         accumulator2 = np.zeros(accumulator.shape)
         for i in tqdm(range(accumulator.shape[0])):
             for j in range(accumulator.shape[1]):
@@ -121,6 +174,16 @@ class HoughTransform:
 
     @staticmethod
     def apply(img, r=7, method='line', supresion=True, plot=True, num_lines=15):
+        """
+        Apply Hough transform
+        :param img: image
+        :param r: radius (Only necessary for circle, default=7)
+        :param method: method use ('line', 'circle', default='line')
+        :param supresion: do supression in accumulator (default=True)
+        :param plot: plot result (default=True)
+        :param num_lines: number of lines or circles (default=True)
+        :return: top results, acucmulator, None or supress accumulator
+        """
         methods = {
             'line': HoughTransform.hough_line,
             'circle': HoughTransform.hough_circle
