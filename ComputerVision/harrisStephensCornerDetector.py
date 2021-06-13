@@ -102,6 +102,55 @@ class HarrisStephens:
         return img2
 
     @staticmethod
+    def get_neighbours(i, j, shape_):
+        """
+        Get neighbours from pixel
+        :param i: coordinate x
+        :param j: coordinate y
+        :param shape_: shape image
+        :return: neighbours
+        """
+        list_indexes = [(i, j)]
+        if i - 1 >= 0:
+            if j - 1 >= 0:
+                list_indexes.append((i - 1, j - 1))
+            if j >= 0:
+                list_indexes.append((i - 1, j))
+            if j + 1 < shape_[1]:
+                list_indexes.append((i - 1, j + 1))
+        if j - 1 >= 0:
+            list_indexes.append((i, j - 1))
+        if j + 1 < shape_[1]:
+            list_indexes.append((i, j + 1))
+        if i + 1 < shape_[0]:
+            if j - 1 >= 0:
+                list_indexes.append((i + 1, j - 1))
+            if j >= 0:
+                list_indexes.append((i + 1, j))
+            if j + 1 < shape_[1]:
+                list_indexes.append((i + 1, j + 1))
+        return list_indexes
+
+    @staticmethod
+    def non_maxima_supresion(img):
+        """
+        Non maxima supresion apply in img
+        :param img: img
+        :return: new img
+        """
+        img2 = np.zeros(img.shape)
+        for i in tqdm(range(img.shape[0])):
+            for j in range(img.shape[1]):
+                key = True
+                for (x, y) in HarrisStephens.get_neighbours(i, j,
+                                                            img.shape):
+                    if img[i][j] < img[x][y]:
+                        key = False
+                if key:
+                    img2[i][j] = img[i][j]
+        return img2
+
+    @staticmethod
     def apply(img, t=0.01, k=0.05, kernel_size=3, gamma=3.5):
         """
         Apply corner detection
@@ -125,8 +174,9 @@ class HarrisStephens:
         print("    (4/5) Compute R")
         R = M.full_R(k=k)
         # Step 5
-        print("    (5/5) Apply threshold")
-        R_n = R / np.max(R)
+        print("    (5/5) Apply threshold and non maxima supression")
+        R_mn = HarrisStephens.non_maxima_supresion(R)
+        R_n = R_mn / np.max(R_mn)
         f = np.vectorize(lambda x: 1 if x > t else 0)
         R2 = f(R_n)
         print("Complete!")
